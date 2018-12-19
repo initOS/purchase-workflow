@@ -58,6 +58,30 @@ class PurchaseOrder(models.Model):
         return super(PurchaseOrder,
                      self.with_context(keep_line_sequence=True)).copy(default)
 
+    @api.model
+    def add_purchase_order_line_sequences(self, chunk_size=50):
+        """
+        Method for cron job to replace the post init hook because this hook
+        would cause the deployment to take too long.
+        Default value for sequence is 9999. So we will just search for those
+        :return:
+        """
+        lines = self.env['purchase.order.line'].search([
+            ('sequence', '=', '9999'),
+        ])
+        orders = lines.mapped('order_id')
+
+        chunk_no = 0
+        end = 0
+        while end < len(orders):
+            begin = chunk_no * chunk_size
+            end = begin + chunk_size - 1
+            if end < len(orders):
+                orders[begin:end]._reset_sequence()
+            else:
+                orders[begin:]._reset_sequence()
+            self.env.cr.commit()
+
 
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
