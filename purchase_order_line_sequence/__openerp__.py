@@ -22,9 +22,10 @@
     'data': [
         'views/purchase_view.xml',
         'views/report_purchaseorder.xml',
-        'views/report_purchasequotation.xml'
+        'views/report_purchasequotation.xml',
         'data/ir_cron.xml',
     ],
+    'pre_init_hook': 'pre_init_hook',
     'installable': True,
     'auto_install': False,
     'license': "AGPL-3",
