@@ -63,9 +63,8 @@ class PurchaseOrder(models.Model):
         res = super(PurchaseOrder, self)._create_stock_moves(
             cr, uid, order, order_lines, picking_id=picking_id, context=context)
         for line in order_lines:
-            num_moves = len(line.move_ids)
-            assert num_moves == 1, 'Expecting to get one move for each order ' \
-                                   'line but have %s.' % num_moves
+            # in case of purchase there should only be one move since the
+            # source destination is a generator
             line.move_ids.write({'sequence': line.sequence})
         return res
 
