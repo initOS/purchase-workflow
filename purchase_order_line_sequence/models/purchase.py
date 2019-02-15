@@ -71,15 +71,8 @@ class PurchaseOrder(models.Model):
         ])
         orders = lines.mapped('order_id')
 
-        chunk_no = 0
-        end = 0
-        while end < len(orders):
-            begin = chunk_no * chunk_size
-            end = begin + chunk_size - 1
-            if end < len(orders):
-                orders[begin:end]._reset_sequence()
-            else:
-                orders[begin:]._reset_sequence()
+        for i in range(0, len(orders), chunk_size):
+            orders[i:][:chunk_size]._reset_sequence()
             self.env.cr.commit()
 
     def _create_stock_moves(
